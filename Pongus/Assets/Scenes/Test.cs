@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
-    // Start is called before the first frame update
+    Transform target;
     void Start()
     {
         
@@ -13,6 +13,6 @@ public class Test : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        transform.position = target.position;
     }
 }
