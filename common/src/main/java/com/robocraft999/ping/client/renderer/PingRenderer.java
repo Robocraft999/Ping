@@ -2,6 +2,8 @@ package com.robocraft999.ping.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.robocraft999.ping.client.ClientPingHandler;
+import com.robocraft999.ping.network.PingRequest;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -24,21 +26,21 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 
 public class PingRenderer {
     private static final Minecraft mc = Minecraft.getInstance();
-    public static void render(HitResult result, LevelRenderer levelRenderer, PoseStack poseStack, boolean active, boolean isFar,float partialTick){
+    public static void render(PingRequest request, LevelRenderer levelRenderer, PoseStack poseStack, boolean active, float partialTick){
         poseStack.pushPose();
-        if (result instanceof BlockHitResult hitResult){
-            poseStack.translate(hitResult.getBlockPos().getX(), hitResult.getBlockPos().getY(), hitResult.getBlockPos().getZ());
-        } else {
-            poseStack.translate(result.getLocation().x, result.getLocation().y, result.getLocation().z);
-        }
+
+        var pos = request.pos();
+        poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
+
         Minecraft minecraft = Minecraft.getInstance();
 
         int color = 0xFFFFFF;
         if (active) {
-            color = ChatFormatting.GOLD.getColor() == null ? 0xFFFFFF : ChatFormatting.GOLD.getColor();
+            color = request.color();
         }
 
         var bufferSource = mc.renderBuffers().bufferSource();
+        boolean isFar = pos.distToCenterSqr(mc.player.getX(), mc.player.getY(), mc.player.getZ()) > ClientPingHandler.farDistanceSquared;
 
         if (!isFar){
             RenderType lineType = RenderType.LINES;

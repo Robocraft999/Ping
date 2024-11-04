@@ -3,21 +3,30 @@ package com.robocraft999.ping.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.robocraft999.ping.Constants;
 import com.robocraft999.ping.client.renderer.PingRenderer;
+import com.robocraft999.ping.network.PingRequest;
+import com.robocraft999.ping.platform.Services;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+
+import java.awt.*;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientPingHandler {
     private static final Minecraft mc = Minecraft.getInstance();
     private static final float MAX_TICKS = 40;
     private static final float extendedReach = 50;
-    private static final float farDistanceSquared = 20*20;
+    public static final float farDistanceSquared = 20*20;
 
     private static float currentTicks = MAX_TICKS;
     private static HitResult result;
+    private static ConcurrentHashMap<PingRequest, Float> activePings = new ConcurrentHashMap<>();
+    private static int color;
 
     public static void handleTick(){
         Constants.LOG.info("Pinging");
@@ -26,10 +35,18 @@ public class ClientPingHandler {
             double blockReach = player.blockInteractionRange() + extendedReach;
             double entityReach = player.entityInteractionRange() + extendedReach;
             result = PingRenderer.rayTrace(player, blockReach, entityReach);
-            if (result != null){
-                currentTicks = MAX_TICKS;
+            if (result instanceof BlockHitResult blockHitResult){
+                Services.NETWORK.sendToServer(new PingRequest(blockHitResult.getBlockPos(), personalColor(), player.getGameProfile()));
             }
         }
+    }
+
+    private static int personalColor(){
+        if (color == 0){
+            Random random = new Random();
+            color = new Color((int)(random.nextDouble() * 255), (int)(random.nextDouble() * 255), (int)(random.nextDouble() * 255)).getRGB();
+        }
+        return color;
     }
 
     public static void handleRender(LevelRenderer renderer, PoseStack poseStack, DeltaTracker delta){
@@ -47,18 +64,20 @@ public class ClientPingHandler {
         // needed for smooth rendering
         // the boolean value controls whether it's still smooth while the game world is paused (e.g. /tick freeze)
 
-        if (result != null){
-            if (currentTicks > 0){
-                var partialTicks = delta.getGameTimeDeltaPartialTick(true);
-                PingRenderer.render(result, renderer, poseStack, active, result.distanceTo(mc.player) > farDistanceSquared, partialTicks);
+        var partialTicks = delta.getGameTimeDeltaPartialTick(true);
+        activePings.forEach((request, remainingTicks) -> {
+            if (remainingTicks > 0){
+                PingRenderer.render(request, renderer, poseStack, active, partialTicks);
+                activePings.put(request, remainingTicks - delta.getRealtimeDeltaTicks());
             } else {
-                result = null;
+                activePings.remove(request);
             }
-        }
+        });
 
         poseStack.popPose();
-        if (currentTicks > 0){
-            currentTicks -= delta.getRealtimeDeltaTicks();
-        }
+    }
+
+    public static void handle(PingRequest request){
+        activePings.put(request, MAX_TICKS);
     }
 }
