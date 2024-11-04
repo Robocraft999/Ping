@@ -1,8 +1,10 @@
 package com.robocraft999.ping.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.robocraft999.ping.Constants;
 import com.robocraft999.ping.client.renderer.PingRenderer;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.world.phys.HitResult;
@@ -18,6 +20,7 @@ public class ClientPingHandler {
     private static HitResult result;
 
     public static void handleTick(){
+        Constants.LOG.info("Pinging");
         var player = mc.player;
         if (player != null){
             double blockReach = player.blockInteractionRange() + extendedReach;
@@ -29,7 +32,7 @@ public class ClientPingHandler {
         }
     }
 
-    public static void handleRender(LevelRenderer renderer, PoseStack poseStack, float partialTicks){
+    public static void handleRender(LevelRenderer renderer, PoseStack poseStack, DeltaTracker delta){
         if (mc.player == null || mc.level == null)
             return;
 
@@ -46,6 +49,7 @@ public class ClientPingHandler {
 
         if (result != null){
             if (currentTicks > 0){
+                var partialTicks = delta.getGameTimeDeltaPartialTick(true);
                 PingRenderer.render(result, renderer, poseStack, active, result.distanceTo(mc.player) > farDistanceSquared, partialTicks);
             } else {
                 result = null;
@@ -54,7 +58,7 @@ public class ClientPingHandler {
 
         poseStack.popPose();
         if (currentTicks > 0){
-            currentTicks -= partialTicks;
+            currentTicks -= delta.getRealtimeDeltaTicks();
         }
     }
 }

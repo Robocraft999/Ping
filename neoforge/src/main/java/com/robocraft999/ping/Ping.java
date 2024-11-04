@@ -1,11 +1,9 @@
 package com.robocraft999.ping;
 
 
-import com.robocraft999.ping.client.PingKeybinds;
+import com.robocraft999.ping.client.ClientEvents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 
 @Mod(Constants.MOD_ID)
@@ -24,6 +22,6 @@ public class Ping {
 
     private void registerKeybinds(RegisterKeyMappingsEvent event){
         Constants.LOG.debug("registering keybinds");
-        event.register(PingKeybinds.PING_KEY.get());
+        event.register(ClientEvents.PING_KEY.get());
     }
 }
