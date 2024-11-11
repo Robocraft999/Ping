@@ -1,18 +1,20 @@
 package com.robocraft999.ping;
 
 
-import com.robocraft999.ping.client.ClientEvents;
+import com.robocraft999.ping.client.NeoClientEvents;
 import com.robocraft999.ping.client.ClientPingHandler;
 import com.robocraft999.ping.network.PingRequest;
 import com.robocraft999.ping.network.ServerPayloadHandler;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import com.robocraft999.ping.platform.config.NeoConfig;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @Mod(Constants.MOD_ID)
@@ -28,11 +30,15 @@ public class Ping {
         CommonClass.init();
         eventBus.addListener(this::registerKeybinds);
         eventBus.addListener(this::registerPayloadHandler);
+
+        var container = ModLoadingContext.get().getActiveContainer();
+        container.registerConfig(ModConfig.Type.CLIENT, NeoConfig.CONFIG_SPEC);
+        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
     private void registerKeybinds(RegisterKeyMappingsEvent event){
         Constants.LOG.debug("registering keybinds");
-        event.register(ClientEvents.PING_KEY.get());
+        event.register(NeoClientEvents.PING_KEY.get());
     }
 
     private void registerPayloadHandler(RegisterPayloadHandlersEvent event){

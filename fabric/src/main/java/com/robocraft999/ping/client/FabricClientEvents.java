@@ -7,21 +7,22 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.KeyMapping;
 
-public class ClientEvents implements ClientModInitializer {
+public class FabricClientEvents implements ClientModInitializer {
     public static KeyMapping PING_KEY;
 
     @Override
     public void onInitializeClient() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (PING_KEY.consumeClick()) {
-                ClientPingHandler.handleTick();
+                ClientPingHandler.handleClick();
             }
+            ClientPingHandler.handleTick();
         });
 
         PING_KEY = KeyBindingHelper.registerKeyBinding(PingKeyBinds.createKey());
 
         WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register((worldRenderContext, blockOutlineContext) -> {
-            ClientPingHandler.handleRender(worldRenderContext.worldRenderer(), worldRenderContext.matrixStack(), worldRenderContext.tickCounter());
+            ClientPingHandler.handleRender(worldRenderContext.matrixStack(), worldRenderContext.tickCounter());
             return true;
         });
     }

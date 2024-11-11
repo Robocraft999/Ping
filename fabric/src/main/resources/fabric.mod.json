@@ -19,7 +19,7 @@
             "com.robocraft999.ping.Ping"
         ],
         "client": [
-            "com.robocraft999.ping.client.ClientEvents"
+          "com.robocraft999.ping.client.FabricClientEvents"
         ]
     },
     "mixins": [

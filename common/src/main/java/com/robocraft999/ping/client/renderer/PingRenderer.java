@@ -2,9 +2,8 @@ package com.robocraft999.ping.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.robocraft999.ping.client.ClientPingHandler;
 import com.robocraft999.ping.network.PingRequest;
-import net.minecraft.ChatFormatting;
+import com.robocraft999.ping.platform.Services;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -26,7 +25,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 
 public class PingRenderer {
     private static final Minecraft mc = Minecraft.getInstance();
-    public static void render(PingRequest request, LevelRenderer levelRenderer, PoseStack poseStack, boolean active, float partialTick){
+    public static void render(PingRequest request, PoseStack poseStack, boolean active, float partialTick){
         poseStack.pushPose();
 
         var pos = request.pos();
@@ -40,7 +39,8 @@ public class PingRenderer {
         }
 
         var bufferSource = mc.renderBuffers().bufferSource();
-        boolean isFar = pos.distToCenterSqr(mc.player.getX(), mc.player.getY(), mc.player.getZ()) > ClientPingHandler.farDistanceSquared;
+        var farDistanceSquared = Math.pow(Services.CONFIG.getNearfield(), 2);
+        boolean isFar = pos.distToCenterSqr(mc.player.getX(), mc.player.getY(), mc.player.getZ()) > farDistanceSquared;
 
         if (!isFar){
             RenderType lineType = RenderType.LINES;

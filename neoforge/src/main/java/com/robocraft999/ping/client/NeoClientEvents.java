@@ -11,15 +11,16 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.util.Lazy;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = Constants.MOD_ID)
-public class ClientEvents {
+public class NeoClientEvents {
 
     public static Lazy<KeyMapping> PING_KEY = Lazy.of(PingKeyBinds::createKey);
 
     @SubscribeEvent
     private static void onClientTick(ClientTickEvent.Post event) {
         while (PING_KEY.get().consumeClick()) {
-            ClientPingHandler.handleTick();
+            ClientPingHandler.handleClick();
         }
+        ClientPingHandler.handleTick();
     }
 
     @SubscribeEvent
@@ -28,7 +29,7 @@ public class ClientEvents {
             return;
         }
 
-        ClientPingHandler.handleRender(event.getLevelRenderer(), event.getPoseStack(), event.getPartialTick());
+        ClientPingHandler.handleRender(event.getPoseStack(), event.getPartialTick());
     }
 
 

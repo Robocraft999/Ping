@@ -1,6 +1,7 @@
 package com.robocraft999.ping.platform;
 
 import com.robocraft999.ping.Constants;
+import com.robocraft999.ping.platform.services.IConfigProvider;
 import com.robocraft999.ping.platform.services.INetworkHandler;
 import com.robocraft999.ping.platform.services.IPlatformHelper;
 
@@ -16,6 +17,7 @@ public class Services {
     // mod is loaded.
     public static final IPlatformHelper PLATFORM = load(IPlatformHelper.class);
     public static final INetworkHandler NETWORK = load(INetworkHandler.class);
+    public static final IConfigProvider CONFIG = load(IConfigProvider.class);
 
     // This code is used to load a service for the current environment. Your implementation of the service must be defined
     // manually by including a text file in META-INF/services named with the fully qualified class name of the service.
