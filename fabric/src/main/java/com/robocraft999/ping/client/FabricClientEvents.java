@@ -19,7 +19,7 @@ public class FabricClientEvents implements ClientModInitializer {
             ClientPingHandler.handleTick();
         });
 
-        PING_KEY = KeyBindingHelper.registerKeyBinding(PingKeyBinds.createKey());
+        PING_KEY = KeyBindingHelper.registerKeyBinding(PingKeyBinds.createPingKey());
 
         WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register((worldRenderContext, blockOutlineContext) -> {
             ClientPingHandler.handleRender(worldRenderContext.matrixStack(), worldRenderContext.tickCounter());

@@ -13,12 +13,20 @@ import net.neoforged.neoforge.common.util.Lazy;
 @EventBusSubscriber(value = Dist.CLIENT, modid = Constants.MOD_ID)
 public class NeoClientEvents {
 
-    public static Lazy<KeyMapping> PING_KEY = Lazy.of(PingKeyBinds::createKey);
+    public static Lazy<KeyMapping> PING_KEY = Lazy.of(PingKeyBinds::createPingKey);
+    public static Lazy<KeyMapping> HIDE_KEY = Lazy.of(PingKeyBinds::createHideKey);
+    public static Lazy<KeyMapping> HIDE_ALL_KEY = Lazy.of(PingKeyBinds::createHideAllKey);
 
     @SubscribeEvent
     private static void onClientTick(ClientTickEvent.Post event) {
         while (PING_KEY.get().consumeClick()) {
             ClientPingHandler.handleClick();
+        }
+        while (HIDE_ALL_KEY.get().consumeClick()){
+            ClientPingHandler.toggleHideAll();
+        }
+        while (HIDE_KEY.get().consumeClick()){
+            ClientPingHandler.handleHide();
         }
         ClientPingHandler.handleTick();
     }
@@ -31,6 +39,4 @@ public class NeoClientEvents {
 
         ClientPingHandler.handleRender(event.getPoseStack(), event.getPartialTick());
     }
-
-
 }

@@ -24,8 +24,11 @@ public class ClientPingHandler {
     private static final ConcurrentHashMap<PingRequest, Float> activePings = new ConcurrentHashMap<>();
     private static final List<PingRequest> newPings = new ArrayList<>();
     private static int color;
+    private static boolean acceptingPings = true;
 
     public static void handleClick(){
+        if (!acceptingPings)
+            return;
         var player = mc.player;
         if (player != null){
             int extendedReach = Services.CONFIG.getExtendedReach();
@@ -39,22 +42,35 @@ public class ClientPingHandler {
     }
 
     public static void handleTick(){
-        if (!newPings.isEmpty()){
-            var level = Minecraft.getInstance().level;
-            newPings.forEach(request -> {
-                activePings.put(request, (float) Services.CONFIG.getMaxTicks());
-                if (level != null){
-                    Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-                    if (camera.isInitialized()){
-                        var pos = request.pos();
-                        var dir = pos.getCenter().subtract(camera.getPosition());
-                        var soundPos = camera.getPosition().add(dir.normalize().scale(2));
-                        level.playLocalSound(soundPos.x, soundPos.y, soundPos.z, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1, 1, false);
-                    }
+        if (!acceptingPings || newPings.isEmpty())
+            return;
+
+        var level = Minecraft.getInstance().level;
+        newPings.forEach(request -> {
+            activePings.put(request, (float) Services.CONFIG.getMaxTicks());
+            if (level != null){
+                Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+                if (camera.isInitialized()){
+                    var pos = request.pos();
+                    var dir = pos.getCenter().subtract(camera.getPosition());
+                    var soundPos = camera.getPosition().add(dir.normalize().scale(2));
+                    level.playLocalSound(soundPos.x, soundPos.y, soundPos.z, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1, 1, false);
                 }
-            });
-            newPings.clear();
+            }
+        });
+        newPings.clear();
+    }
+
+    public static void toggleHideAll(){
+        acceptingPings = !acceptingPings;
+        if (!acceptingPings){
+            handleHide();
         }
+    }
+
+    public static void handleHide(){
+        activePings.clear();
+        newPings.clear();
     }
 
     private static int personalColor(){
@@ -66,7 +82,7 @@ public class ClientPingHandler {
     }
 
     public static void handleRender(PoseStack poseStack, DeltaTracker delta){
-        if (mc.player == null || mc.level == null)
+        if (!acceptingPings || mc.player == null || mc.level == null)
             return;
 
         poseStack.pushPose();
@@ -94,6 +110,8 @@ public class ClientPingHandler {
     }
 
     public static void handle(PingRequest request){
+        if (!acceptingPings)
+            return;
         newPings.add(request);
     }
 }

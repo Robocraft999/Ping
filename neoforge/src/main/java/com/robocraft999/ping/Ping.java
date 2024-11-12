@@ -39,6 +39,8 @@ public class Ping {
     private void registerKeybinds(RegisterKeyMappingsEvent event){
         Constants.LOG.debug("registering keybinds");
         event.register(NeoClientEvents.PING_KEY.get());
+        event.register(NeoClientEvents.HIDE_KEY.get());
+        event.register(NeoClientEvents.HIDE_ALL_KEY.get());
     }
 
     private void registerPayloadHandler(RegisterPayloadHandlersEvent event){
