@@ -1,7 +1,6 @@
 package com.robocraft999.ping;
 
 
-import com.robocraft999.ping.client.NeoClientEvents;
 import com.robocraft999.ping.client.ClientPingHandler;
 import com.robocraft999.ping.network.PingRequest;
 import com.robocraft999.ping.network.ServerPayloadHandler;
@@ -10,9 +9,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -28,19 +24,10 @@ public class Ping {
         // Use NeoForge to bootstrap the Common mod.
         Constants.LOG.info("Hello NeoForge world!");
         CommonClass.init();
-        eventBus.addListener(this::registerKeybinds);
         eventBus.addListener(this::registerPayloadHandler);
 
         var container = ModLoadingContext.get().getActiveContainer();
         container.registerConfig(ModConfig.Type.CLIENT, NeoConfig.CONFIG_SPEC);
-        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-    }
-
-    private void registerKeybinds(RegisterKeyMappingsEvent event){
-        Constants.LOG.debug("registering keybinds");
-        event.register(NeoClientEvents.PING_KEY.get());
-        event.register(NeoClientEvents.HIDE_KEY.get());
-        event.register(NeoClientEvents.HIDE_ALL_KEY.get());
     }
 
     private void registerPayloadHandler(RegisterPayloadHandlersEvent event){

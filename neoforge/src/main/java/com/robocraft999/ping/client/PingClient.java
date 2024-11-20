@@ -4,21 +4,41 @@ import com.robocraft999.ping.Constants;
 import com.robocraft999.ping.PingKeyBinds;
 import net.minecraft.client.KeyMapping;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.Lazy;
 
-@EventBusSubscriber(value = Dist.CLIENT, modid = Constants.MOD_ID)
-public class NeoClientEvents {
-
+@Mod(value = Constants.MOD_ID, dist = Dist.CLIENT)
+public class PingClient {
     public static Lazy<KeyMapping> PING_KEY = Lazy.of(PingKeyBinds::createPingKey);
     public static Lazy<KeyMapping> HIDE_KEY = Lazy.of(PingKeyBinds::createHideKey);
     public static Lazy<KeyMapping> HIDE_ALL_KEY = Lazy.of(PingKeyBinds::createHideAllKey);
 
-    @SubscribeEvent
-    private static void onClientTick(ClientTickEvent.Post event) {
+    public PingClient(IEventBus modBus){
+        modBus.addListener(this::registerKeybinds);
+
+        NeoForge.EVENT_BUS.addListener(this::onClientTick);
+        NeoForge.EVENT_BUS.addListener(this::renderLevel);
+
+        var container = ModLoadingContext.get().getActiveContainer();
+        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+    }
+
+    private void registerKeybinds(RegisterKeyMappingsEvent event){
+        Constants.LOG.debug("registering keybinds");
+        event.register(PING_KEY.get());
+        event.register(HIDE_KEY.get());
+        event.register(HIDE_ALL_KEY.get());
+    }
+
+    private void onClientTick(ClientTickEvent.Post event) {
         while (PING_KEY.get().consumeClick()) {
             ClientPingHandler.handleClick();
         }
@@ -31,8 +51,7 @@ public class NeoClientEvents {
         ClientPingHandler.handleTick();
     }
 
-    @SubscribeEvent
-    public static void renderLevel(RenderLevelStageEvent event) {
+    private void renderLevel(RenderLevelStageEvent event) {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
             return;
         }
