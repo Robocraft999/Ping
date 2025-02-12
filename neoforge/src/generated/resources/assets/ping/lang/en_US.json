@@ -9,5 +9,15 @@
   "ping.configuration.max_ticks": "Max Ticks",
   "ping.configuration.nearfield": "Nearfield",
   "ping.configuration.show_player_heads": "Show player heads",
-  "ping.configuration.use_custom_color": "Use custom color"
+  "ping.configuration.use_custom_color": "Use custom color",
+  "text.autoconfig.ping.category.client": "Client",
+  "text.autoconfig.ping.category.server": "Server",
+  "text.autoconfig.ping.option.client.customColor": "Custom color",
+  "text.autoconfig.ping.option.client.maxTicks": "Max Ticks",
+  "text.autoconfig.ping.option.client.nearField": "Nearfield",
+  "text.autoconfig.ping.option.client.showPlayerHeads": "Show player heads",
+  "text.autoconfig.ping.option.client.useCustomColor": "Use custom color",
+  "text.autoconfig.ping.option.server.clickCooldown": "Click cooldown",
+  "text.autoconfig.ping.option.server.extendedReach": "Extended reach",
+  "text.autoconfig.ping.title": "Ping"
 }
