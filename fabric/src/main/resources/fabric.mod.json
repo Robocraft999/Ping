@@ -8,8 +8,9 @@
         "${mod_author}"
     ],
     "contact": {
-        "homepage": "https://fabricmc.net/",
-        "sources": "https://github.com/FabricMC/fabric-example-mod"
+        "homepage": "https://modrinth.com/mod/pings",
+        "sources": "https://github.com/Robocraft999/Ping",
+        "issues": "https://github.com/Robocraft999/Ping/issues"
     },
     "license": "${license}",
     "icon": "${mod_id}.png",
@@ -37,10 +38,5 @@
     },
     "suggests": {
         "another-mod": "*"
-    },
-    "custom": {
-        "modmenu": {
-
-        }
     }
 }
