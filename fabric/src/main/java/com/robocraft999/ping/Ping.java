@@ -5,6 +5,7 @@ import com.robocraft999.ping.platform.Services;
 import com.robocraft999.ping.platform.config.FabricConfig;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
+import me.shedaniel.autoconfig.serializer.PartitioningSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -30,6 +31,6 @@ public class Ping implements ModInitializer {
             Services.NETWORK.sendToPlayersInRadius(payload, level, Services.CONFIG.getExtendedReach());
         });
 
-        AutoConfig.register(FabricConfig.class, JanksonConfigSerializer::new);
+        AutoConfig.register(FabricConfig.class, PartitioningSerializer.wrap(JanksonConfigSerializer::new));
     }
 }
