@@ -27,7 +27,8 @@ public class Ping {
         eventBus.addListener(this::registerPayloadHandler);
 
         var container = ModLoadingContext.get().getActiveContainer();
-        container.registerConfig(ModConfig.Type.CLIENT, NeoConfig.CONFIG_SPEC);
+        container.registerConfig(ModConfig.Type.CLIENT, NeoConfig.CLIENT_CONFIG_SPEC);
+        container.registerConfig(ModConfig.Type.SERVER, NeoConfig.SERVER_CONFIG_SPEC);
     }
 
     private void registerPayloadHandler(RegisterPayloadHandlersEvent event){

@@ -24,6 +24,7 @@ neoForge {
         }
         data {
             data()
+            programArguments.addAll "--mod", "${mod_id}", "--output", file("src/generated/resources").getAbsolutePath(), "--all"
         }
         server {
             server()

@@ -1,0 +1,13 @@
+{
+  "key.categories.ping": "Ping",
+  "key.ping.hide": "Hide currently visible",
+  "key.ping.hide_all": "Toggle hiding pings",
+  "key.ping.ping": "Ping",
+  "ping.configuration.click_cooldown": "Click cooldown",
+  "ping.configuration.custom_color": "Custom color",
+  "ping.configuration.extended_reach": "Extended Reach",
+  "ping.configuration.max_ticks": "Max Ticks",
+  "ping.configuration.nearfield": "Nearfield",
+  "ping.configuration.show_player_heads": "Show player heads",
+  "ping.configuration.use_custom_color": "Use custom color"
+}

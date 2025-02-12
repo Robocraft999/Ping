@@ -1,6 +1,7 @@
 package com.robocraft999.ping.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.robocraft999.ping.Constants;
 import com.robocraft999.ping.client.renderer.PingRenderer;
 import com.robocraft999.ping.network.PingRequest;
 import com.robocraft999.ping.platform.Services;
@@ -22,12 +23,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClientPingHandler {
     private static final Minecraft mc = Minecraft.getInstance();
     private static final ConcurrentHashMap<PingRequest, Float> activePings = new ConcurrentHashMap<>();
+    private static int clickCooldown = 0;
     private static final List<PingRequest> newPings = new ArrayList<>();
     private static int color;
     private static boolean acceptingPings = true;
 
     public static void handleClick(){
         if (!acceptingPings)
+            return;
+        if (clickCooldown > 0)
             return;
         var player = mc.player;
         if (player != null){
@@ -36,14 +40,17 @@ public class ClientPingHandler {
             double entityReach = player.entityInteractionRange() + extendedReach;
             HitResult result = PingRenderer.rayTrace(player, blockReach, entityReach);
             if (result instanceof BlockHitResult blockHitResult){
-                Services.NETWORK.sendToServer(new PingRequest(blockHitResult.getBlockPos(), personalColor(), player.getGameProfile()));
+                Services.NETWORK.sendToServer(new PingRequest(blockHitResult.getBlockPos(), personalColor(), player.getGameProfile(), player.level().dimension()));
             }
+            clickCooldown = Services.CONFIG.getClickCooldown();
         }
     }
 
     public static void handleTick(){
-        if (!acceptingPings || newPings.isEmpty())
+        if (!acceptingPings)
             return;
+        if (clickCooldown > 0)
+            clickCooldown -= 1;
 
         var level = Minecraft.getInstance().level;
         newPings.forEach(request -> {
@@ -77,6 +84,9 @@ public class ClientPingHandler {
         if (color == 0){
             Random random = new Random();
             color = new Color((int)(random.nextDouble() * 255), (int)(random.nextDouble() * 255), (int)(random.nextDouble() * 255)).getRGB();
+        }
+        if (Services.CONFIG.useCustomColor()){
+            return Services.CONFIG.getCustomColor().getFireworkColor();
         }
         return color;
     }

@@ -1,8 +1,10 @@
 package com.robocraft999.ping.platform;
 
 import com.robocraft999.ping.platform.services.IPlatformHelper;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class ForgePlatformHelper implements IPlatformHelper {
 
@@ -19,5 +21,10 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public boolean isDevelopmentEnvironment() {
         return !FMLLoader.isProduction();
+    }
+
+    @Override
+    public MinecraftServer getCurrentServer() {
+        return ServerLifecycleHooks.getCurrentServer();
     }
 }
