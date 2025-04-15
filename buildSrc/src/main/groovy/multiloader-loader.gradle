@@ -1,5 +1,6 @@
 plugins {
     id 'multiloader-common'
+    id "me.modmuss50.mod-publish-plugin"
 }
 
 configurations {
@@ -31,10 +32,10 @@ processResources {
     from(configurations.commonResources)
 }
 
-tasks.named('javadoc', Javadoc).configure {
+/*tasks.named('javadoc', Javadoc).configure {
     dependsOn(configurations.commonJava)
     source(configurations.commonJava)
-}
+}*/
 
 tasks.named('sourcesJar', Jar) {
     dependsOn(configurations.commonJava)
@@ -42,3 +43,48 @@ tasks.named('sourcesJar', Jar) {
     dependsOn(configurations.commonResources)
     from(configurations.commonResources)
 }
+
+def mainArtifact = name == "fabric" ? remapJar.archivePath : jar.archivePath
+
+publishMods {
+    var changelog_file = new File(rootProject.uri("changelog.md"))
+    changelog = changelog_file.exists() ?  changelog_file.text : ""
+    type = STABLE
+    file = mainArtifact
+    displayName = base.archivesName
+    modLoaders.add(name)
+
+    // CurseForge
+    curseforge {
+        accessToken = providers.gradleProperty("CF_TOKEN")
+        projectId = "1241114"
+        minecraftVersions.add("1.21")
+        minecraftVersions.add("1.21.1")
+        if (project.name == "fabric"){
+            requires {
+                slug = "cloth-config"
+            }
+        }
+        dryRun = true
+    }
+
+    // Modrinth
+    modrinth {
+        accessToken = providers.gradleProperty("MODRINTH_TOKEN")
+        projectId = "WLBCMaNq"
+        minecraftVersions.add("1.21")
+        minecraftVersions.add("1.21.1")
+        if (project.name == "fabric"){
+            requires {
+                slug = "fabric-api"
+            }
+            requires {
+                slug = "cloth-config"
+            }
+        }
+        dryRun = true
+    }
+}
+
+tasks.getByName("publishModrinth").dependsOn name == "fabric" ? remapJar : jar
+tasks.getByName("publishCurseforge").dependsOn name == "fabric" ? remapJar : jar
