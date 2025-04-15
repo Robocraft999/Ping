@@ -65,7 +65,6 @@ publishMods {
                 slug = "cloth-config"
             }
         }
-        dryRun = true
     }
 
     // Modrinth
@@ -82,7 +81,6 @@ publishMods {
                 slug = "cloth-config"
             }
         }
-        dryRun = true
     }
 }
 
