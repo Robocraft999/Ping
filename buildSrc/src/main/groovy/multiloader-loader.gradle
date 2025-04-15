@@ -45,13 +45,15 @@ tasks.named('sourcesJar', Jar) {
 }
 
 def mainArtifact = name == "fabric" ? remapJar.archivePath : jar.archivePath
+def mainDisplayName = "${archivesBaseName}-${version}"
+println(displayName)
 
 publishMods {
     var changelog_file = new File(rootProject.uri("changelog.md"))
     changelog = changelog_file.exists() ?  changelog_file.text : ""
     type = STABLE
     file = mainArtifact
-    displayName = base.archivesName
+    displayName = mainDisplayName
     modLoaders.add(name)
 
     // CurseForge
